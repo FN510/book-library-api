@@ -22,13 +22,33 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
       Book.find((err, books) => {
         if (err) { console.log(err) }
-        console.log(books);
+        else {
+          res.send(books);
+        }
       })
     })
     
     .post(function (req, res){
       let title = req.body.title;
-      //response will contain new book object including atleast _id and title
+      if (!title) {
+        res.send('missing required field title');
+      } else {
+        //response will contain new book object including atleast _id and title
+        let newBook = new Book({
+          title: title,
+        });
+
+        newBook.save((err, savedBook) => {
+          if (err) { console.log(err) }
+          else if (savedBook) {
+            console.log('new book - ' + title);
+            res.send(savedBook)
+          }
+        })
+
+          
+        }
+
     })
     
     .delete(function(req, res){
@@ -41,6 +61,12 @@ module.exports = function (app) {
     .get(function (req, res){
       let bookid = req.params.id;
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      Book.findById(bookid, (err, foundBook)=> {
+        if (err) { console.log(err) } 
+        else {
+          res.send(foundBook);
+        }
+      })
 
     })
     
