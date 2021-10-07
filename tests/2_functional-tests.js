@@ -102,13 +102,23 @@ suite('Functional Tests', function() {
         .get('/api/books/615eeda119a0f9ca79167f6e')
         .end(function(err, res){
           assert.equal(res.status, 200);
-          assert.equal(res.text, 'book not found')
+          assert.equal(res.text, 'no book exists')
           done();
         });
         //done();
       });
       
       test('Test GET /api/books/[id] with valid id in db',  function(done){
+        chai.request(server)
+        .get('/api/books/615ef74d6eb3ba0f9d439c12')
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.isObject(res.body, 'response should be an an object');
+          assert.property(res.body, 'commentcount', 'Books in array should contain commentcount');
+          assert.propertyVal(res.body, 'title', "'A Monkey and a Boy'",'Book object should have the correct title');
+          assert.property(res.body, '_id', 'Books in array should contain _id');
+          done();
+        });
         //done();
       });
       
