@@ -8,12 +8,22 @@
 
 'use strict';
 
+let mongoose = require('mongoose');
+mongoose.connect(`mongodb+srv://${process.env.mongo_uri}@cluster0.csliv.mongodb.net/fcc?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true }).
+  catch(error => console.log(error));
+
+let Book = require('../models/Book.js');
+
 module.exports = function (app) {
 
   app.route('/api/books')
     .get(function (req, res){
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      Book.find((err, books) => {
+        if (err) { console.log(err) }
+        console.log(books);
+      })
     })
     
     .post(function (req, res){
@@ -31,6 +41,7 @@ module.exports = function (app) {
     .get(function (req, res){
       let bookid = req.params.id;
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+
     })
     
     .post(function(req, res){
