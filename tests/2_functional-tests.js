@@ -85,6 +85,7 @@ suite('Functional Tests', function() {
           assert.equal(res.status, 200);
           assert.isArray(res.body, 'response should be an array');
           assert.property(res.body[0], 'commentcount', 'Books in array should contain commentcount');
+          //assert.propertyVal(res.body, 'title', "'A Monkey and a Boy'",'Book object should have the correct title');
           assert.property(res.body[0], 'title', 'Books in array should contain title');
           assert.property(res.body[0], '_id', 'Books in array should contain _id');
           done();
@@ -128,15 +129,50 @@ suite('Functional Tests', function() {
     suite('POST /api/books/[id] => add comment/expect book object with id', function(){
       
       test('Test POST /api/books/[id] with comment', function(done){
-        //done();
+        chai.request(server)
+        .post('/api/books/615ef8181829fd8014b3929e')
+        .type('form')
+        .send({
+          'comment': 'Loved reading this... 5 stars!'
+        })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.isObject(res.body, 'response should be an an object');
+          assert.property(res.body, 'commentcount', 'Books in array should contain commentcount');
+          assert.propertyVal(res.body, 'title', "Work in Progress",'Book object should have the correct title');
+          assert.isAtLeast(res.body.commentcount, 1);
+          assert.property(res.body, '_id', 'Books in array should contain _id');
+          done();
+        });
+        
       });
 
       test('Test POST /api/books/[id] without comment field', function(done){
-        //done();
+        chai.request(server)
+        .post('/api/books/615ef8181829fd8014b3929e')
+        .type('form')
+        .send({
+          //'comment': 'Loved reading this... 5 stars!'
+        })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.equal(res.text, 'missing required field comment')
+          done();
+        });
       });
 
       test('Test POST /api/books/[id] with comment, id not in db', function(done){
-        //done();
+        chai.request(server)
+          .post('/api/books/615ef8181129fd8014b3929e')
+          .type('form')
+          .send({
+            'comment': 'Loved reading this... 5 stars!'
+          })
+          .end(function(err, res){
+            assert.equal(res.status, 200);
+            assert.equal(res.text, 'no book exists')
+            done();
+          });
       });
       
     });
